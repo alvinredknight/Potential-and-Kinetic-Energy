@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Christmas Energy Lab – Potential and Kinetic Energy</title>
+<style>
+:root{
+  --bg1:#0f4c34;--bg2:#8e1b2c;--accent:#c62828;--accent2:#1e7b45;--gold:#f6c445;
+  --ink:#1b2626;--muted:#5a6b6b;--card:rgba(255,255,255,.96);--line:#e3e8e8;--soft:#f3f7f6;
+}
+body.snowman{--bg1:#0e3a66;--bg2:#4f9ad6;--accent:#d63a3a;--accent2:#1f8a5b;--gold:#ffd34d;--soft:#eef5fb}
+body.chimney{--bg1:#2b0d0d;--bg2:#8a2a1a;--accent:#d84315;--accent2:#2e7d32;--gold:#ffb74d;--soft:#fbf1ea}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:"Inter","Segoe UI","Helvetica Neue",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  color:var(--ink);min-height:100vh;letter-spacing:.1px;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;
+}
+#bg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+.wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:18px 14px 60px}
+header{display:flex;align-items:center;gap:16px;color:#fff;margin-bottom:14px}
+#mascot{width:82px;height:104px;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+header h1{margin:0;font-size:clamp(22px,4.5vw,36px);font-weight:800;letter-spacing:-.4px;line-height:1.05}
+header p{margin:4px 0 0;opacity:.9;font-weight:500}
+.tools{margin-left:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.seg{display:flex;background:rgba(255,255,255,.18);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;color:#fff;padding:6px 12px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.seg button.on{background:#fff;color:var(--accent)}
+.seg button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.card{background:var(--card);border-radius:20px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-bottom:16px}
+.stepper{display:flex;gap:6px;margin-bottom:14px}
+.step{flex:1;text-align:center;color:#fff;font-size:12px;font-weight:700;padding:8px 4px;border-radius:12px;background:rgba(255,255,255,.16)}
+.step.cur{background:#fff;color:var(--accent)}
+.step.done{background:var(--accent2)}
+h2{margin:0 0 6px;font-size:22px;letter-spacing:-.3px}
+.sub{color:var(--muted);margin:0 0 14px}
+label{display:block;font-weight:700;font-size:13px;margin:12px 0 5px}
+input[type=text],input[type=email],input[type=number],select{
+  width:100%;font:inherit;font-size:16px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+input:focus,select:focus{border-color:var(--accent2)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}header{flex-wrap:wrap}.tools{margin-left:0;align-items:flex-start}}
+.btn{border:0;border-radius:14px;padding:13px 20px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;color:#fff;background:var(--accent);box-shadow:0 4px 0 rgba(0,0,0,.18);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.btn.green{background:var(--accent2)}
+.btn.gold{background:var(--gold);color:#3a2a00}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.formula{background:var(--soft);border-left:6px solid var(--accent2);border-radius:12px;padding:12px 14px;font-weight:700;margin:0 0 14px;line-height:1.6}
+.formula small{display:block;font-weight:500;color:var(--muted)}
+.q{border:2px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;display:grid;grid-template-columns:36px 1fr;gap:12px;background:#fff}
+.q.ok{border-color:var(--accent2);background:#f1faf4}
+.q.bad{border-color:var(--accent);background:#fff4f3}
+.qn{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800}
+.q.ok .qn{background:var(--accent2)}
+.qt{line-height:1.5}
+.row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.row input{max-width:200px}
+.unit{font-weight:800;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:9px 18px;font:inherit;font-weight:800;font-size:16px;cursor:pointer}
+.chip:hover:not(:disabled){border-color:var(--accent2);background:var(--soft)}
+.chip.sel-ok{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.chip.sel-bad{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip:disabled{cursor:default}
+.fb{margin-top:8px;font-size:14px;line-height:1.5}
+.fb.ok{color:#14653a}.fb.bad{color:#a11d1d}
+.sim{border:2px solid var(--line);border-radius:16px;padding:12px;background:#fff;margin:10px 0 6px}
+.sim canvas{width:100%;height:auto;border-radius:12px;display:block;touch-action:none}
+.ctrl{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.ctrl input[type=range]{flex:1;min-width:160px;accent-color:var(--accent2)}
+.ctrl .btn{padding:9px 16px}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:10px}
+.readout div{background:var(--soft);border-radius:10px;padding:8px 10px;font-size:13px;color:var(--muted);font-weight:600}
+.readout b{display:block;color:var(--ink);font-size:16px}
+.scen{margin:22px 0 4px;padding-top:6px;border-top:2px dashed var(--line)}
+.scen:first-of-type{border-top:0;margin-top:6px}
+.badges{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:12px 0}
+.badge{text-align:center;width:112px;font-size:12px;font-weight:700}
+.bdot{width:84px;height:84px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;font-size:38px;
+  background:radial-gradient(circle at 30% 25%,#fff3b0,var(--gold) 55%,#c98a00);box-shadow:0 5px 12px rgba(0,0,0,.28),inset 0 0 0 4px rgba(255,255,255,.55)}
+.badge.locked .bdot{filter:grayscale(1) opacity(.35);box-shadow:none}
+.badge.master .bdot{width:100px;height:100px;font-size:46px;background:radial-gradient(circle at 30% 25%,#fff,#ffd54f 45%,#d9301f)}
+.status{font-size:30px;font-weight:900;text-align:center;padding:12px;border-radius:14px;margin:12px 0}
+.status.pass{background:#e4f6ea;color:#14653a}.status.fail{background:#fde8e6;color:#a11d1d}
+table.sum{width:100%;border-collapse:collapse;margin:8px 0}
+table.sum td,table.sum th{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+table.sum td:last-child,table.sum th:last-child{text-align:right}
+#sumPreview canvas{width:100%;height:auto;border-radius:14px;border:2px solid var(--line)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+#emailMsg{margin-top:10px;font-weight:600}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;place-items:center;z-index:50;padding:16px}
+#modal.show{display:grid}
+#modal .box{background:#fff;border-radius:24px;padding:26px;max-width:380px;width:100%;text-align:center;animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.hide{display:none!important}
+.err{color:#a11d1d;font-weight:700;margin-top:8px}
+.shake{animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style>
+</head>
+<body class="classic">
+<canvas id="bg"></canvas>
+<canvas id="fx"></canvas>
+
+<div class="wrap">
+  <header>
+    <div id="mascot"></div>
+    <div>
+      <h1>Christmas Energy Lab</h1>
+      <p>Potential and Kinetic Energy &middot; Grade 10</p>
+    </div>
+    <div class="tools">
+      <div class="seg" id="themeSeg" role="group" aria-label="Theme">
+        <button data-t="classic" class="on">Classic</button>
+        <button data-t="snowman">Snowman</button>
+        <button data-t="chimney">Chimney</button>
+      </div>
+      <div class="seg"><button id="soundBtn" class="on" aria-pressed="true">🔊 Sound on</button></div>
+    </div>
+  </header>
+
+  <div class="stepper" id="stepper"></div>
+
+  <!-- START -->
+  <section class="card" id="vStart">
+    <h2>Welcome, Energy Explorer!</h2>
+    <p class="sub">Fill in your details to begin. You can use a keyboard, mouse, pen or touch screen.</p>
+    <label for="name">Full name</label>
+    <input type="text" id="name" autocomplete="name" placeholder="e.g. Juan Dela Cruz">
+    <label for="email">Email address</label>
+    <input type="email" id="email" autocomplete="email" placeholder="e.g. juan@example.com">
+    <div class="grid">
+      <div><label for="grade">Grade</label>
+        <select id="grade" disabled><option>Grade 10</option></select></div>
+      <div><label for="section">Section</label>
+        <select id="section"><option value="">Select section</option><option>Kings</option><option>Chronicles</option><option>Ezra</option></select></div>
+    </div>
+    <div class="err" id="startErr"></div>
+    <div class="actions"><button class="btn" id="startBtn">Start the Activity 🎄</button></div>
+    <p class="sub" style="margin-top:14px">20 points in total: Part 1 (5) · Part 2 (5) · Part 3 (5) · Part 4 (5). You need 15/20 to pass. Round answers to two decimal places.</p>
+  </section>
+
+  <!-- PART -->
+  <section class="card hide" id="vPart"></section>
+
+  <!-- SUMMARY -->
+  <section class="card hide" id="vSum"></section>
+</div>
+
+<div id="modal"><div class="box" id="modalBox"></div></div>
+
+<script>
+/* ===== Settings ===== */
+// Optional: put the address of your own server here to send the PNG by email automatically.
+// The server should accept a multipart POST with fields: email, name, file (PNG).
+const EMAIL_ENDPOINT = "";
+
+/* ===== Helpers ===== */
+const $=s=>document.querySelector(s);
+const G=9.8;
+const rnd=(a,b)=>Math.random()*(b-a)+a;
+const rint=(a,b)=>Math.floor(rnd(a,b+1));
+const pick=a=>a[rint(0,a.length-1)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rint(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const r2=x=>Math.round(x*100)/100;
+const f2=x=>r2(x).toLocaleString('en-US',{maximumFractionDigits:2});
+const PART_NAMES=["Units","Potential Energy","Kinetic Energy","Mechanical Energy"];
+const BADGES=[{n:"Unit Elf",i:"🧝"},{n:"Height Hero",i:"🎄"},{n:"Speedy Sleigh",i:"🛷"},{n:"Energy Wizard",i:"⚡"}];
+const THEMES={
+  classic:{bg1:"#0f4c34",bg2:"#8e1b2c",accent:"#c62828",accent2:"#1e7b45",gold:"#f6c445"},
+  snowman:{bg1:"#0e3a66",bg2:"#4f9ad6",accent:"#d63a3a",accent2:"#1f8a5b",gold:"#ffd34d"},
+  chimney:{bg1:"#2b0d0d",bg2:"#8a2a1a",accent:"#d84315",accent2:"#2e7d32",gold:"#ffb74d"}
+};
+let theme="classic",soundOn=true;
+
+/* ===== Sound (speaker output) ===== */
+let AC=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==="suspended")AC.resume();return AC}
+function tone(f,d,type="sine",vol=.14,delay=0){
+  if(!soundOn)return;const c=ac();if(!c)return;
+  const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+delay;
+  o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+.05);
+}
+const sfx={
+  click:()=>tone(660,.07,"triangle",.08),
+  ok:()=>{tone(784,.14,"sine",.14);tone(988,.14,"sine",.14,.1);tone(1175,.22,"sine",.14,.2)},
+  bad:()=>{tone(220,.2,"sawtooth",.08);tone(165,.3,"sawtooth",.08,.15)},
+  badge:()=>{[523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,.22,"triangle",.15,i*.12))},
+  jingle:()=>{[659,659,659,659,659,659,659,784,523,587,659].forEach((f,i)=>tone(f,.16,"triangle",.12,i*.15))}
+};
+
+/* ===== Theme, mascot, falling snow / sparks ===== */
+const MASCOTS={
+  classic:`<svg viewBox="0 0 100 130"><polygon points="50,6 18,70 82,70" fill="#1e7b45"/><polygon points="50,30 12,100 88,100" fill="#27a05a"/><polygon points="50,58 6,124 94,124" fill="#1e7b45"/><rect x="43" y="120" width="14" height="10" fill="#6d4321"/><polygon points="50,0 54,9 63,9 56,14 59,23 50,17 41,23 44,14 37,9 46,9" fill="#f6c445"/><circle cx="38" cy="56" r="4" fill="#c62828"/><circle cx="62" cy="84" r="4.5" fill="#f6c445"/><circle cx="34" cy="100" r="4.5" fill="#c62828"/></svg>`,
+  snowman:`<svg viewBox="0 0 100 130"><circle cx="50" cy="100" r="28" fill="#fff" stroke="#bcd6ee" stroke-width="2"/><circle cx="50" cy="58" r="21" fill="#fff" stroke="#bcd6ee" stroke-width="2"/><circle cx="50" cy="26" r="15" fill="#fff" stroke="#bcd6ee" stroke-width="2"/><rect x="36" y="6" width="28" height="9" fill="#222"/><rect x="42" y="-4" width="16" height="14" fill="#222"/><circle cx="45" cy="24" r="2" fill="#222"/><circle cx="55" cy="24" r="2" fill="#222"/><polygon points="50,28 66,31 50,34" fill="#f57c00"/><rect x="34" y="39" width="32" height="7" rx="3" fill="#d63a3a"/><rect x="58" y="42" width="7" height="18" fill="#d63a3a"/><circle cx="50" cy="66" r="3" fill="#222"/><circle cx="50" cy="80" r="3" fill="#222"/><circle cx="50" cy="96" r="3" fill="#222"/><line x1="28" y1="58" x2="8" y2="46" stroke="#6d4321" stroke-width="3"/><line x1="72" y1="58" x2="92" y2="46" stroke="#6d4321" stroke-width="3"/></svg>`,
+  chimney:`<svg viewBox="0 0 100 130"><circle cx="40" cy="12" r="8" fill="#ffffff55"/><circle cx="52" cy="4" r="6" fill="#ffffff44"/><rect x="22" y="26" width="60" height="12" rx="2" fill="#5a2a22"/><rect x="28" y="38" width="48" height="90" fill="#a5412b"/><g stroke="#6e2a1b" stroke-width="2"><line x1="28" y1="56" x2="76" y2="56"/><line x1="28" y1="76" x2="76" y2="76"/><line x1="28" y1="96" x2="76" y2="96"/><line x1="28" y1="116" x2="76" y2="116"/><line x1="46" y1="38" x2="46" y2="56"/><line x1="60" y1="56" x2="60" y2="76"/><line x1="40" y1="76" x2="40" y2="96"/><line x1="58" y1="96" x2="58" y2="116"/></g><path d="M72 40 v20 h14 v-8 h-6 v-12z" fill="#d84315" transform="translate(-4 8)"/><rect x="66" y="48" width="14" height="6" fill="#fff" transform="translate(-4 4)"/></svg>`
+};
+function setTheme(t){
+  theme=t;document.body.className=t;$("#mascot").innerHTML=MASCOTS[t];
+  document.querySelectorAll("#themeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+  if($("#vSum").classList.contains("hide")===false)renderSummary(true);
+}
+const bg=$("#bg"),bx=bg.getContext("2d");let flakes=[];
+function newFlake(init){return{x:rnd(0,bg.width),y:init?rnd(0,bg.height):(theme==="chimney"?bg.height+10:-10),r:rnd(1.5,4.2),s:rnd(.4,1.4),d:rnd(0,6.28)}}
+function resizeBg(){bg.width=innerWidth;bg.height=innerHeight;flakes=Array.from({length:Math.min(110,Math.floor(innerWidth/9))},()=>newFlake(true))}
+addEventListener("resize",resizeBg);resizeBg();
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function snowLoop(){
+  bx.clearRect(0,0,bg.width,bg.height);
+  const spark=theme==="chimney";
+  bx.fillStyle=spark?"rgba(255,170,60,.85)":"rgba(255,255,255,.85)";
+  for(const f of flakes){
+    f.d+=.02;f.x+=Math.sin(f.d)*.5;f.y+=spark?-f.s:f.s;
+    if(!reduce){bx.beginPath();bx.arc(f.x,f.y,spark?f.r*.6:f.r,0,6.283);bx.fill()}
+    if(f.y>bg.height+12||f.y<-12){Object.assign(f,newFlake(false))}
+  }
+  requestAnimationFrame(snowLoop);
+}
+snowLoop();
+
+/* confetti */
+const fx=$("#fx"),fc=fx.getContext("2d");let parts=[];
+function burst(){
+  fx.width=innerWidth;fx.height=innerHeight;
+  const cols=["#c62828","#1e7b45","#f6c445","#ffffff","#2e9be0"];
+  parts=Array.from({length:130},()=>({x:innerWidth/2,y:innerHeight/3,vx:rnd(-7,7),vy:rnd(-11,-2),c:pick(cols),s:rnd(5,10),r:rnd(0,6)}));
+  (function step(){
+    fc.clearRect(0,0,fx.width,fx.height);let alive=false;
+    for(const p of parts){p.vy+=.28;p.x+=p.vx;p.y+=p.vy;p.r+=.2;if(p.y<fx.height+20)alive=true;
+      fc.save();fc.translate(p.x,p.y);fc.rotate(p.r);fc.fillStyle=p.c;fc.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);fc.restore()}
+    if(alive)requestAnimationFrame(step);else fc.clearRect(0,0,fx.width,fx.height);
+  })();
+}
+
+/* ===== State ===== */
+let S;
+function freshState(keep){
+  S={name:keep?S.name:"",email:keep?S.email:"",section:keep?S.section:"",part:-1,q:[[],[],[],[]],done:[false,false,false,false],saved:false,rec:null};
+}
+freshState(false);
+
+/* ===== Question generators ===== */
+const ITEMS_PE=["A gift box","A Christmas star ornament","A bag of toys","A snowball","A gingerbread house","A box of candy canes","A sleigh bell"];
+const ITEMS_KE=["A sled","A snowball","A rolling gift cart","A toy train","A reindeer","A skier","A snowmobile"];
+function genP1(){
+  const opts=["kg","m","m/s","m/s²","J","N","s"];
+  return [
+    {t:"The variable <b>m</b> stands for the <b>mass</b> of an object. What is its unit?",a:"kg",e:"Mass is measured in kilograms (kg)."},
+    {t:"The variable <b>g</b> stands for the <b>gravitational acceleration</b> (9.8). What is its unit?",a:"m/s²",e:"Acceleration is measured in meters per second squared (m/s²)."},
+    {t:"The variable <b>h</b> stands for the <b>height</b>. What is its unit?",a:"m",e:"Height is a length, measured in meters (m)."},
+    {t:"The variable <b>v</b> stands for the <b>velocity</b> (speed). What is its unit?",a:"m/s",e:"Velocity is measured in meters per second (m/s)."},
+    {t:"Potential energy (PE = mgh) and kinetic energy (KE = ½mv²) are both energies. What is the unit of energy?",a:"J",e:"Energy is measured in joules (J). 1 J = 1 kg·m²/s²."}
+  ].map(q=>({...q,kind:"choice",opts}));
+}
+function genP2(){
+  return shuffle(ITEMS_PE).slice(0,5).map(it=>{
+    const m=pick([1,1.5,2,2.5,3,4,5,6,7.5,8,10,12,15,20]),h=pick([1.5,2,3,4,5,6,8,10,12.5,15,20,25]);
+    const a=m*G*h;
+    return{kind:"num",unit:"J",a,tol:.011,
+      t:`${it} with a mass of <b>${m} kg</b> is at a height of <b>${h} m</b>. Calculate its potential energy.`,
+      e:`PE = mgh = (${m})(9.8)(${h}) = ${f2(a)} J`};
+  });
+}
+function genP3(){
+  return shuffle(ITEMS_KE).slice(0,5).map(it=>{
+    const m=pick([1,1.5,2,3,4,5,6,8,10,12,20,40]),v=pick([2,3,4,5,6,7,8,10,12,15,20]);
+    const a=.5*m*v*v;
+    return{kind:"num",unit:"J",a,tol:.011,
+      t:`${it} has a mass of <b>${m} kg</b> and moves at <b>${v} m/s</b>. Calculate its kinetic energy.`,
+      e:`KE = ½mv² = ½(${m})(${v})² = ${f2(a)} J`};
+  });
+}
+function genP4(){
+  const fall={m:pick([1,2,3,5,8,10]),h0:pick([10,12,15,20,25,30,40])};
+  fall.h1=r2(fall.h0*pick([.25,.4,.5,.6]));
+  const pend={m:pick([.5,1,1.5,2,3]),L:pick([2.5,3,4,5]),h0:pick([.5,.8,1,1.2,1.5,1.8])};
+  pend.h2=r2(pend.h0*pick([.25,.4,.5,.6]));
+  pend.th0=Math.acos(1-pend.h0/pend.L);
+  const Ef=fall.m*G*fall.h0,Ep=pend.m*G*pend.h0;
+  const qs=[
+    {kind:"num",unit:"J",tol:.011,a:Ef,scen:"fall",
+     t:`A <b>${fall.m} kg</b> gift is dropped from rest at <b>${fall.h0} m</b>. What is its <b>total mechanical energy</b> before it is dropped (PE + KE)?`,
+     e:`Before: KE = 0, so total = PE = mgh = (${fall.m})(9.8)(${fall.h0}) = ${f2(Ef)} J`},
+    {kind:"num",unit:"J",tol:.011,a:Ef-fall.m*G*fall.h1,scen:"fall",
+     t:`Using PE before + KE before = PE after + KE after, what is the gift's <b>kinetic energy</b> when it has fallen to a height of <b>${fall.h1} m</b>?`,
+     e:`KE after = PE before − PE after = ${f2(Ef)} − (${fall.m})(9.8)(${fall.h1}) = ${f2(Ef-fall.m*G*fall.h1)} J`},
+    {kind:"num",unit:"m/s",tol:.02,a:Math.sqrt(2*G*fall.h0),scen:"fall",
+     t:`What is the <b>speed</b> of the gift just before it hits the ground (h = 0)?`,
+     e:`PE before = KE after → mgh = ½mv² → v = √(2gh) = √(2·9.8·${fall.h0}) = ${f2(Math.sqrt(2*G*fall.h0))} m/s`},
+    {kind:"num",unit:"m/s",tol:.02,a:Math.sqrt(2*G*pend.h0),scen:"pend",
+     t:`A <b>${pend.m} kg</b> ornament on a pendulum (string ${pend.L} m) is released from rest at a height of <b>${pend.h0} m</b> above its lowest point. What is its <b>speed at the lowest point</b>?`,
+     e:`mgh = ½mv² → v = √(2gh) = √(2·9.8·${pend.h0}) = ${f2(Math.sqrt(2*G*pend.h0))} m/s`},
+    {kind:"num",unit:"m/s",tol:.02,a:Math.sqrt(2*G*(pend.h0-pend.h2)),scen:"pend",
+     t:`What is the ornament's <b>speed</b> when it swings through a height of <b>${pend.h2} m</b> above the lowest point?`,
+     e:`mg(${pend.h0}) = mg(${pend.h2}) + ½mv² → v = √(2·9.8·(${pend.h0} − ${pend.h2})) = ${f2(Math.sqrt(2*G*(pend.h0-pend.h2)))} m/s`}
+  ];
+  return{qs,fall,pend};
+}
+function genPart(p){
+  if(p===0)S.q[0]=genP1();
+  if(p===1)S.q[1]=genP2();
+  if(p===2)S.q[2]=genP3();
+  if(p===3){const g=genP4();S.q[3]=g.qs;S.fall=g.fall;S.pend=g.pend}
+}
+
+/* ===== Stepper & navigation ===== */
+function renderStepper(){
+  const names=["Part 1","Part 2","Part 3","Part 4","Summary"];
+  $("#stepper").innerHTML=names.map((n,i)=>{
+    let c="step";
+    if(i<4&&S.done[i])c+=" done";
+    if(i===S.part)c+=" cur";
+    if(i===4&&S.part===4)c+=" cur";
+    return `<div class="${c}">${n}</div>`;
+  }).join("");
+  if(S.part===-1)$("#stepper").classList.add("hide");else $("#stepper").classList.remove("hide");
+}
+function show(id){["vStart","vPart","vSum"].forEach(v=>$("#"+v).classList.toggle("hide",v!==id))}
+
+$("#startBtn").onclick=()=>{
+  sfx.click();
+  const n=$("#name").value.trim(),e=$("#email").value.trim(),s=$("#section").value;
+  const err=$("#startErr");
+  if(n.length<2){err.textContent="Please type your name.";$("#name").focus();return}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){err.textContent="Please type a valid email address.";$("#email").focus();return}
+  if(!s){err.textContent="Please choose your section.";$("#section").focus();return}
+  err.textContent="";
+  S.name=n;S.email=e;S.section=s;ac();sfx.jingle();
+  goPart(0);
+};
+["name","email"].forEach(id=>$("#"+id).addEventListener("keydown",e=>{if(e.key==="Enter")$("#startBtn").click()}));
+
+function goPart(p){
+  S.part=p;
+  if(p===4){renderSummary();return}
+  genPart(p);renderPart(p);renderStepper();show("vPart");scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ===== Part rendering ===== */
+const FORMULAS=[
+  `Know your units: <b>m</b> (mass), <b>g</b> (gravitational acceleration), <b>h</b> (height), <b>v</b> (velocity)<small>Tap or click the correct unit. You get one try per question.</small>`,
+  `PE = mgh<small>m = mass (kg) · g = 9.8 m/s² · h = height (m) · answer in joules (J), rounded to 2 decimal places</small>`,
+  `KE = ½mv²<small>m = mass (kg) · v = velocity (m/s) · answer in joules (J), rounded to 2 decimal places</small>`,
+  `PE before + KE before = PE after + KE after<small>Use g = 9.8 m/s². Play the simulations, then solve. Answers in J or m/s, rounded to 2 decimal places.</small>`
+];
+const PART_SUB=[
+  "Part 1 · Identify the units (5 points)","Part 2 · Calculate potential energy (5 points)",
+  "Part 3 · Calculate kinetic energy (5 points)","Part 4 · Total mechanical energy (5 points)"
+];
+function renderPart(p){
+  const box=$("#vPart");
+  let html=`<h2>${PART_SUB[p]}</h2><p class="sub">${PART_NAMES[p]} — ${S.name} · Grade 10 ${S.section}</p><div class="formula">${FORMULAS[p]}</div>`;
+  if(p<3){
+    html+=`<div id="qs"></div>`;
+  }else{
+    html+=`
+    <div class="scen"><h2 style="font-size:19px">🎁 Scenario A: Falling object</h2>
+      <p class="sub">A ${S.fall.m} kg gift is released from rest at ${S.fall.h0} m. Drag the slider or press Play (slow motion) and watch PE turn into KE.</p>
+      <div class="sim"><canvas id="cvFall" width="640" height="340"></canvas>
+        <div class="ctrl"><button class="btn green" id="pF">▶ Play</button><button class="btn ghost" id="rF">↺ Reset</button>
+        <input type="range" id="sF" min="0" max="1000" value="0" aria-label="Fall progress"></div>
+        <div class="readout" id="roF"></div></div>
+      <div id="qsF"></div></div>
+    <div class="scen"><h2 style="font-size:19px">🔔 Scenario B: Pendulum</h2>
+      <p class="sub">A ${S.pend.m} kg ornament on a ${S.pend.L} m string is released from rest at ${S.pend.h0} m above its lowest point. Drag the slider to move the bob.</p>
+      <div class="sim"><canvas id="cvPend" width="640" height="340"></canvas>
+        <div class="ctrl"><button class="btn green" id="pP">▶ Play</button><button class="btn ghost" id="rP">↺ Reset</button>
+        <input type="range" id="sP" min="-1000" max="1000" value="1000" aria-label="Pendulum position"></div>
+        <div class="readout" id="roP"></div></div>
+      <div id="qsP"></div></div>`;
+  }
+  box.innerHTML=html;
+  if(p<3){S.q[p].forEach((q,i)=>mountQ($("#qs"),p,i))}
+  else{
+    S.q[3].forEach((q,i)=>mountQ(q.scen==="fall"?$("#qsF"):$("#qsP"),3,i));
+    initSims();
+  }
+}
+function mountQ(host,p,i){
+  const q=S.q[p][i];const d=document.createElement("div");d.className="q";d.id=`q${p}_${i}`;
+  let inner=`<div class="qn">${i+1}</div><div><div class="qt">${q.t}</div>`;
+  if(q.kind==="choice"){
+    inner+=`<div class="chips">${q.opts.map(o=>`<button class="chip" data-o="${o}">${o}</button>`).join("")}</div>`;
+  }else{
+    inner+=`<div class="row"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Answer ${i+1}" placeholder="Your answer"><span class="unit">${q.unit}</span><button class="btn green chk">Check</button></div>`;
+  }
+  inner+=`<div class="fb"></div></div>`;
+  d.innerHTML=inner;host.appendChild(d);
+  if(q.kind==="choice")d.querySelectorAll(".chip").forEach(b=>b.onclick=()=>submit(p,i,b.dataset.o));
+  else{
+    const inp=d.querySelector("input");
+    d.querySelector(".chk").onclick=()=>submit(p,i,inp.value);
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")submit(p,i,inp.value)});
+  }
+}
+function submit(p,i,val){
+  const q=S.q[p][i];if(q.answered)return;
+  const d=$(`#q${p}_${i}`);
+  let ok;
+  if(q.kind==="choice")ok=(val===q.a);
+  else{
+    const n=parseFloat(String(val).replace(/,/g,"").trim());
+    if(!isFinite(n)){d.classList.add("shake");setTimeout(()=>d.classList.remove("shake"),300);d.querySelector(".fb").innerHTML=`<span class="fb bad">Please type a number.</span>`;return}
+    ok=Math.abs(n-q.a)<=Math.max(q.tol,Math.abs(q.a)*.001);
+    q.given=n;
+  }
+  q.answered=true;q.ok=ok;
+  d.classList.add(ok?"ok":"bad");
+  const fb=d.querySelector(".fb");
+  const correctTxt=q.kind==="choice"?q.a:`${f2(q.a)} ${q.unit}`;
+  fb.className="fb "+(ok?"ok":"bad");
+  fb.innerHTML=(ok?`✔ Correct!`:`✘ Not quite. The correct answer is <b>${correctTxt}</b>.`)+`<br>${q.e}`;
+  if(q.kind==="choice")d.querySelectorAll(".chip").forEach(b=>{b.disabled=true;if(b.dataset.o===val)b.classList.add(ok?"sel-ok":"sel-bad");else if(!ok&&b.dataset.o===q.a)b.classList.add("sel-ok")});
+  else{d.querySelector("input").disabled=true;d.querySelector(".chk").disabled=true}
+  ok?sfx.ok():sfx.bad();
+  if(S.q[p].every(x=>x.answered))finishPart(p);
+}
+function partScore(p){return S.q[p].filter(q=>q.ok).length}
+function finishPart(p){
+  S.done[p]=true;renderStepper();
+  setTimeout(()=>{
+    sfx.badge();burst();
+    const sc=partScore(p),b=BADGES[p];
+    $("#modalBox").innerHTML=`<div class="bdot" style="margin:0 auto 10px;width:110px;height:110px;font-size:52px">${b.i}</div>
+      <h2>${b.n} Badge earned!</h2><p class="sub">Part ${p+1} complete · Score <b>${sc} / 5</b></p>
+      <button class="btn" id="contBtn">${p<3?"Continue to Part "+(p+2):"See my Summary"}</button>`;
+    $("#modal").classList.add("show");
+    $("#contBtn").focus();
+    $("#contBtn").onclick=()=>{sfx.click();$("#modal").classList.remove("show");sims.stop();goPart(p+1)};
+  },700);
+}
+
+/* ===== Simulations ===== */
+const sims={fall:null,pend:null,raf:0,last:0,
+  stop(){if(this.raf)cancelAnimationFrame(this.raf);this.raf=0;this.fall=this.pend=null}};
+function drawBars(c,x,y,w,hMax,PE,KE,E0){
+  c.fillStyle="#f3f7f6";c.fillRect(x-10,y-20,w+20,hMax+62);
+  const bw=(w-14)/2;
+  const ph=hMax*Math.min(1,PE/E0),kh=hMax*Math.min(1,KE/E0);
+  c.fillStyle="#c62828";c.fillRect(x,y+hMax-ph,bw,ph);
+  c.fillStyle="#1e7b45";c.fillRect(x+bw+14,y+hMax-kh,bw,kh);
+  c.strokeStyle="#333";c.setLineDash([5,4]);c.beginPath();c.moveTo(x-6,y);c.lineTo(x+w+6,y);c.stroke();c.setLineDash([]);
+  c.fillStyle="#333";c.font="700 13px system-ui,sans-serif";c.textAlign="center";
+  c.fillText("PE",x+bw/2,y+hMax+16);c.fillText("KE",x+bw+14+bw/2,y+hMax+16);
+  c.font="600 11px system-ui,sans-serif";c.fillText("Total energy",x+w/2,y-6);
+}
+function skyAndGround(c,W,H,gy){
+  const g=c.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,theme==="chimney"?"#2a1a3a":"#143a66");g.addColorStop(1,theme==="chimney"?"#7a3a2a":"#6fa8dc");
+  c.fillStyle=g;c.fillRect(0,0,420,H);
+  c.fillStyle="#fff";c.fillRect(0,gy,420,H-gy);
+  c.fillStyle="rgba(255,255,255,.7)";
+  for(let i=0;i<24;i++){c.beginPath();c.arc((i*97)%420,(i*53)%(gy-10),1.6,0,6.28);c.fill()}
+}
+function setRO(id,h,v,PE,KE,E0){
+  $(id).innerHTML=`<div>Height<b>${f2(h)} m</b></div><div>Speed<b>${f2(v)} m/s</b></div><div>PE<b>${f2(PE)} J</b></div><div>KE<b>${f2(KE)} J</b></div><div>PE + KE<b>${f2(PE+KE)} J</b></div>`;
+}
+function drawFall(){
+  const s=sims.fall,F=S.fall,c=s.cv.getContext("2d"),W=s.cv.width,H=s.cv.height;
+  const T=Math.sqrt(2*F.h0/G),t=s.p*T;
+  const h=Math.max(0,F.h0-.5*G*t*t),v=G*t;
+  const PE=F.m*G*h,KE=Math.max(0,F.m*G*F.h0-PE),E0=F.m*G*F.h0;
+  c.clearRect(0,0,W,H);
+  const gy=H-40,top=40,sc=(gy-top)/F.h0;
+  skyAndGround(c,W,H,gy);
+  c.strokeStyle="rgba(255,255,255,.8)";c.fillStyle="#fff";c.font="600 11px system-ui,sans-serif";c.textAlign="left";c.lineWidth=1;
+  const step=F.h0>=30?10:5;
+  for(let m=0;m<=F.h0;m+=step){const y=gy-m*sc;c.beginPath();c.moveTo(30,y);c.lineTo(46,y);c.stroke();c.fillText(m+" m",50,y+4)}
+  c.setLineDash([6,5]);c.strokeStyle="#ffe082";const y1=gy-F.h1*sc;c.beginPath();c.moveTo(90,y1);c.lineTo(410,y1);c.stroke();c.setLineDash([]);
+  c.fillStyle="#ffe082";c.fillText("h = "+f2(F.h1)+" m",330,y1-5);
+  c.font="34px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif";c.textAlign="center";c.fillText("🎁",230,gy-h*sc-2);
+  drawBars(c,455,50,150,200,PE,KE,E0);
+  setRO("#roF",h,v,PE,KE,E0);
+  $("#sF").value=Math.round(s.p*1000);
+}
+function drawPend(){
+  const s=sims.pend,P=S.pend,c=s.cv.getContext("2d"),W=s.cv.width,H=s.cv.height;
+  const th=s.th,h=P.L*(1-Math.cos(th));
+  const E0=P.m*G*P.h0,PE=P.m*G*h,KE=Math.max(0,E0-PE),v=Math.sqrt(2*KE/P.m);
+  c.clearRect(0,0,W,H);
+  skyAndGround(c,W,H,H-20);
+  const px=210,py=40,Lp=230,k=Lp/P.L,lowY=py+Lp;
+  c.fillStyle="#6d4321";c.fillRect(px-60,py-12,120,10);
+  c.setLineDash([6,5]);c.strokeStyle="#fff";c.lineWidth=1.2;
+  c.beginPath();c.moveTo(60,lowY);c.lineTo(400,lowY);c.stroke();
+  c.strokeStyle="#ffe082";const y0=lowY-P.h0*k,y2=lowY-P.h2*k;
+  c.beginPath();c.moveTo(60,y0);c.lineTo(400,y0);c.moveTo(60,y2);c.lineTo(400,y2);c.stroke();c.setLineDash([]);
+  c.font="600 11px system-ui,sans-serif";c.textAlign="left";c.fillStyle="#fff";c.fillText("lowest point (h = 0)",64,lowY-5);
+  c.fillStyle="#ffe082";c.fillText("release h = "+f2(P.h0)+" m",64,y0-5);c.fillText("h = "+f2(P.h2)+" m",64,y2-5);
+  const bx2=px+Lp*Math.sin(th),by=py+Lp*Math.cos(th);
+  c.strokeStyle="#eee";c.lineWidth=2.5;c.beginPath();c.moveTo(px,py);c.lineTo(bx2,by);c.stroke();
+  const rg=c.createRadialGradient(bx2-6,by-6,2,bx2,by,18);rg.addColorStop(0,"#ff8a80");rg.addColorStop(1,"#b71c1c");
+  c.fillStyle=rg;c.beginPath();c.arc(bx2,by,17,0,6.283);c.fill();
+  c.fillStyle="#f6c445";c.fillRect(bx2-4,by-23,8,7);
+  drawBars(c,455,50,150,200,PE,KE,E0);
+  setRO("#roP",h,v,PE,KE,E0);
+  $("#sP").value=Math.round(th/P.th0*1000);
+}
+function initSims(){
+  sims.fall={cv:$("#cvFall"),p:0,playing:false};
+  sims.pend={cv:$("#cvPend"),th:S.pend.th0,w:0,playing:false};
+  const pF=$("#pF"),pP=$("#pP");
+  pF.onclick=()=>{sfx.click();const s=sims.fall;if(s.p>=1)s.p=0;s.playing=!s.playing;pF.textContent=s.playing?"⏸ Pause":"▶ Play"};
+  $("#rF").onclick=()=>{sfx.click();const s=sims.fall;s.p=0;s.playing=false;pF.textContent="▶ Play";drawFall()};
+  $("#sF").oninput=e=>{const s=sims.fall;s.playing=false;pF.textContent="▶ Play";s.p=e.target.value/1000;drawFall()};
+  pP.onclick=()=>{sfx.click();const s=sims.pend;if(!s.playing&&Math.abs(s.th)<.02)s.th=S.pend.th0;s.w=0;s.playing=!s.playing;pP.textContent=s.playing?"⏸ Pause":"▶ Play"};
+  $("#rP").onclick=()=>{sfx.click();const s=sims.pend;s.th=S.pend.th0;s.w=0;s.playing=false;pP.textContent="▶ Play";drawPend()};
+  $("#sP").oninput=e=>{const s=sims.pend;s.playing=false;pP.textContent="▶ Play";s.th=S.pend.th0*e.target.value/1000;s.w=0;drawPend()};
+  drawFall();drawPend();sims.last=performance.now();
+  (function loop(now){
+    if(!sims.fall)return;
+    const dt=Math.min(.05,(now-sims.last)/1000);sims.last=now;
+    const f=sims.fall,p=sims.pend;
+    if(f.playing){f.p+=dt/3.2;if(f.p>=1){f.p=1;f.playing=false;pF.textContent="▶ Play"}drawFall()}
+    if(p.playing){
+      const n=10,d=dt/n,L=S.pend.L;
+      for(let i=0;i<n;i++){p.w+=-(G/L)*Math.sin(p.th)*d;p.th+=p.w*d}
+      drawPend();
+    }
+    sims.raf=requestAnimationFrame(loop);
+  })(sims.last);
+}
+
+/* ===== Records database (stored in this browser) ===== */
+const DB_KEY="christmasEnergyActivityDB";
+function dbLoad(){try{return JSON.parse(localStorage.getItem(DB_KEY)||"[]")}catch(e){return[]}}
+function dbSave(a){try{localStorage.setItem(DB_KEY,JSON.stringify(a))}catch(e){}}
+let memDB=[];
+function dbAll(){const a=dbLoad();return a.length?a:memDB}
+
+/* ===== Summary ===== */
+function totals(){const sc=[0,1,2,3].map(partScore);return{sc,total:sc.reduce((a,b)=>a+b,0)}}
+function stats(){
+  const all=dbAll(),mine=all.filter(r=>r.email.toLowerCase()===S.email.toLowerCase()&&r.name.toLowerCase()===S.name.toLowerCase());
+  const passed=all.filter(r=>r.passed).length,avg=all.length?all.reduce((a,r)=>a+r.total,0)/all.length:0;
+  return{count:all.length,mine:mine.length,passed,avg};
+}
+function renderSummary(reRender){
+  const {sc,total}=totals();
+  if(!reRender){
+    S.part=4;renderStepper();
+    if(!S.saved){
+      const rec={name:S.name,email:S.email,section:S.section,total,passed:total>=15,master:total===20,date:new Date().toISOString()};
+      const a=dbLoad();a.push(rec);memDB=a;dbSave(a);S.saved=true;S.rec=rec;
+      setTimeout(()=>{sfx.jingle();burst()},300);
+    }
+  }
+  const st=stats(),passed=total>=15,master=total===20;
+  const bd=BADGES.map((b,i)=>`<div class="badge ${S.done[i]?"":"locked"}"><div class="bdot">${b.i}</div>${b.n}<br><span style="color:var(--muted)">Part ${i+1}: ${sc[i]}/5</span></div>`).join("")
+    +`<div class="badge master ${master?"":"locked"}"><div class="bdot">👑</div>MASTER<br><span style="color:var(--muted)">${master?"No errors!":"All 20 points"}</span></div>`;
+  $("#vSum").innerHTML=`
+    <h2>🎅 Summary of Completion</h2>
+    <p class="sub">${S.name} · ${S.email} · Grade 10 ${S.section}</p>
+    <div class="status ${passed?"pass":"fail"}">${passed?"PASSED":"NOT PASSED"} · ${total} / 20</div>
+    <table class="sum"><tr><th>Part</th><th>Score</th></tr>
+      ${PART_NAMES.map((n,i)=>`<tr><td>Part ${i+1}: ${n}</td><td><b>${sc[i]} / 5</b></td></tr>`).join("")}
+      <tr><td><b>Total</b></td><td><b>${total} / 20</b></td></tr></table>
+    <div class="badges">${bd}</div>
+    <table class="sum"><tr><th colspan="2">Activity database (this device)</th></tr>
+      <tr><td>Times the activity was done</td><td><b>${st.count}</b></td></tr>
+      <tr><td>Your attempts</td><td><b>${st.mine}</b></td></tr>
+      <tr><td>Times passed</td><td><b>${st.passed}</b></td></tr>
+      <tr><td>Average score</td><td><b>${f2(st.avg)} / 20</b></td></tr></table>
+    <div id="sumPreview"></div>
+    <div class="actions">
+      <button class="btn" id="dlBtn">Click Here to Download the Summary</button>
+      <button class="btn green" id="mailBtn">Send Summary to Email</button>
+      <button class="btn ghost" id="againBtn">Try Again</button>
+    </div>
+    <div id="emailMsg"></div>`;
+  show("vSum");
+  const cv=makeSummaryCanvas(total,sc,st);$("#sumPreview").appendChild(cv);
+  $("#dlBtn").onclick=()=>{sfx.click();downloadPNG()};
+  $("#mailBtn").onclick=()=>{sfx.click();sendMail()};
+  $("#againBtn").onclick=()=>{sfx.click();freshState(true);S.part=-1;renderStepper();$("#name").value=S.name;$("#email").value=S.email;$("#section").value=S.section;show("vStart")};
+  if(!reRender)scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ===== PNG summary ===== */
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function makeSummaryCanvas(total,sc,st){
+  const T=THEMES[theme],W=1080,H=1500,cv=document.createElement("canvas");cv.width=W;cv.height=H;
+  const c=cv.getContext("2d");
+  const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,T.bg1);g.addColorStop(1,T.bg2);c.fillStyle=g;c.fillRect(0,0,W,H);
+  c.fillStyle="rgba(255,255,255,.8)";for(let i=0;i<70;i++){c.beginPath();c.arc((i*173)%W,(i*311)%H,1.5+(i%4),0,6.28);c.fill()}
+  c.fillStyle="#fff";rr(c,50,170,W-100,H-230,36);c.fill();
+  const txt=(s,x,y,size,w,col,al)=>{c.font=`${w} ${size}px "Inter","Segoe UI",system-ui,sans-serif`;c.fillStyle=col;c.textAlign=al||"left";c.fillText(s,x,y)};
+  txt("Christmas Energy Lab",W/2,95,60,800,"#fff","center");
+  txt("Potential and Kinetic Energy · Summary of Completion",W/2,140,26,500,"rgba(255,255,255,.9)","center");
+  let y=245;
+  txt(S.name,90,y,44,800,"#1b2626");y+=44;
+  txt(S.email,90,y,26,500,"#5a6b6b");y+=40;
+  txt(`Grade 10 · Section ${S.section}`,90,y,28,700,"#1b2626");y+=36;
+  txt(new Date().toLocaleString(),90,y,22,500,"#5a6b6b");y+=40;
+  const pass=total>=15;
+  c.fillStyle=pass?"#e4f6ea":"#fde8e6";rr(c,90,y,W-180,110,22);c.fill();
+  txt(pass?"PASSED":"NOT PASSED",120,y+72,58,900,pass?"#14653a":"#a11d1d");
+  txt(`${total} / 20`,W-120,y+72,58,900,pass?"#14653a":"#a11d1d","right");
+  y+=160;
+  PART_NAMES.forEach((n,i)=>{
+    c.fillStyle=i%2?"#fff":"#f3f7f6";rr(c,90,y,W-180,62,14);c.fill();
+    txt(`Part ${i+1}: ${n}`,115,y+42,28,700,"#1b2626");txt(`${sc[i]} / 5`,W-115,y+42,30,800,T.accent2,"right");y+=70;
+  });
+  y+=20;txt("Badges",90,y,30,800,"#1b2626");y+=30;
+  const emo='"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+  const cx=[170,350,530,710,930];
+  for(let i=0;i<5;i++){
+    const m=i===4,earned=m?total===20:S.done[i],r=m?78:62,cy=y+90;
+    c.save();c.globalAlpha=earned?1:.25;
+    const rg=c.createRadialGradient(cx[i]-20,cy-20,5,cx[i],cy,r);
+    rg.addColorStop(0,m?"#fff":"#fff3b0");rg.addColorStop(.55,m?"#ffd54f":T.gold);rg.addColorStop(1,m?"#d9301f":"#c98a00");
+    c.fillStyle=rg;c.beginPath();c.arc(cx[i],cy,r,0,6.283);c.fill();
+    c.lineWidth=6;c.strokeStyle="rgba(255,255,255,.6)";c.stroke();
+    c.font=`${m?64:50}px ${emo}`;c.textAlign="center";c.fillStyle="#000";c.fillText(m?"👑":BADGES[i].i,cx[i],cy+(m?22:18));
+    c.restore();
+    txt(m?"MASTER":BADGES[i].n,cx[i],cy+r+32,22,800,"#1b2626","center");
+  }
+  y+=270;
+  c.fillStyle="#f3f7f6";rr(c,90,y,W-180,200,22);c.fill();
+  txt("Activity database",115,y+44,28,800,"#1b2626");
+  txt(`Times the activity was done: ${st.count}`,115,y+86,26,600,"#333");
+  txt(`Your attempts: ${st.mine}   ·   Times passed: ${st.passed}`,115,y+124,26,600,"#333");
+  txt(`Average score: ${f2(st.avg)} / 20`,115,y+162,26,600,"#333");
+  txt("Rounded to two decimal places · Generated by Christmas Energy Lab 🎄",W/2,H-95,22,500,"#5a6b6b","center");
+  return cv;
+}
+function currentBlob(){
+  return new Promise(res=>{const {sc,total}=totals();makeSummaryCanvas(total,sc,stats()).toBlob(res,"image/png")});
+}
+function fileName(){return `Energy-Summary-${S.name.replace(/[^a-z0-9]+/gi,"_")}-${S.section}.png`}
+async function downloadPNG(){
+  const blob=await currentBlob(),a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=fileName();document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  $("#emailMsg").textContent="Summary downloaded as a PNG file.";
+}
+async function sendMail(){
+  const msg=$("#emailMsg"),blob=await currentBlob(),{total}=totals();
+  const file=new File([blob],fileName(),{type:"image/png"});
+  const subject=`Energy Activity Summary – ${S.name} (${total}/20)`;
+  const body=`Hello,\n\nHere is the summary of my Potential and Kinetic Energy activity.\nName: ${S.name}\nGrade 10 – ${S.section}\nScore: ${total}/20 (${total>=15?"PASSED":"NOT PASSED"})\n`;
+  try{
+    if(EMAIL_ENDPOINT){
+      const fd=new FormData();fd.append("email",S.email);fd.append("name",S.name);fd.append("subject",subject);fd.append("file",file);
+      const r=await fetch(EMAIL_ENDPOINT,{method:"POST",body:fd});
+      msg.textContent=r.ok?`Summary sent to ${S.email}.`:"The email server could not send the summary. Please download the PNG instead.";return;
+    }
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:subject,text:body});
+      msg.textContent="Choose your email app in the share sheet to send the PNG.";return;
+    }
+  }catch(e){if(e&&e.name==="AbortError"){msg.textContent="Sharing was cancelled.";return}}
+  // Fallback: download the PNG and open the email app with a prepared message
+  await downloadPNG();
+  location.href=`mailto:${encodeURIComponent(S.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body+"\n(Please attach the downloaded PNG file: "+fileName()+")")}`;
+  msg.textContent=`The PNG was downloaded and your email app should open. Attach "${fileName()}" and press send.`;
+}
+
+/* ===== UI wiring ===== */
+document.querySelectorAll("#themeSeg button").forEach(b=>b.onclick=()=>{sfx.click();setTheme(b.dataset.t)});
+$("#soundBtn").onclick=e=>{soundOn=!soundOn;e.target.textContent=soundOn?"🔊 Sound on":"🔇 Sound off";e.target.classList.toggle("on",soundOn);e.target.setAttribute("aria-pressed",soundOn);if(soundOn){ac();sfx.click()}};
+setTheme("classic");renderStepper();
+</script>
+</body>
+</html>
